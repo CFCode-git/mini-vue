@@ -4,7 +4,7 @@ import { reactive } from '../reactivity'
 describe('effect', () => {
   it('happy path', () => {
     let user = reactive({
-      age: 10
+      age: 10 
     })
 
     // init 一开始 effect 会执行一次
@@ -17,5 +17,18 @@ describe('effect', () => {
     // update effect 再次执行
     user.age++
     expect(nextAge).toBe(12)
+  })
+  it('should return runner while effect was called', () => {
+    // effect should return a runner
+    // and we can get the result of the runner when we call runner
+    let foo = 1
+    const runner = effect(() => {
+      foo++
+      return 'runner called'
+    })
+    expect(foo).toBe(2)
+    let res = runner()
+    expect(foo).toBe(3)
+    expect(res).toBe('runner called')
   })
 })
