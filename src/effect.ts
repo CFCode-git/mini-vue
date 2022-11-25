@@ -2,6 +2,7 @@ class ReactiveEffect {
   private _fn: any
   deps = []
   public scheduler: Function | undefined
+  public onStop?: () => void
   constructor(fn, scheduler?) {
     this._fn = fn
     this.scheduler = scheduler
@@ -15,6 +16,7 @@ class ReactiveEffect {
     // 清除掉 dep 依赖集合中的当前 effect 实例
     // 达到trigger触发依赖的时候不执行当前的_fn的效果。
     this.deps.forEach((dep: any) => {
+      if (this.onStop) this.onStop()
       dep.delete(this)
     })
   }
@@ -23,6 +25,7 @@ class ReactiveEffect {
 let activeEffect
 export function effect(fn, options: any = {}) {
   const _effect = new ReactiveEffect(fn, options.scheduler)
+  _effect.onStop = options.onStop
   _effect.run()
   // 这里将当前 effect 的 run 方法返回出去，同时挂载了当前 effect 实例
   // 在stop方法中，需要调用「传入的runner的effect上的stop」函数，它的效果是

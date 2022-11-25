@@ -79,5 +79,25 @@ describe('effect', () => {
     runner()
     expect(dummy).toBe(3)
   })
-  it('onStop', () => {})
+  it('onStop', () => {
+    let obj = reactive({
+      age: 1
+    })
+    let dummy
+    let onStop = jest.fn()
+    let runner = effect(
+      () => {
+        dummy = obj.age
+      },
+      {
+        onStop
+      }
+    )
+
+    stop(runner)
+
+    obj.age = 2
+    expect(dummy).toBe(1)
+    expect(onStop).toHaveBeenCalledTimes(1)
+  })
 })
