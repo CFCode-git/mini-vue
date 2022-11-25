@@ -1,3 +1,5 @@
+import { extend } from "./shared"
+
 class ReactiveEffect {
   deps = []
   onStop?: () => void
@@ -35,7 +37,11 @@ function cleanUpEffect(effect) {
 let activeEffect
 export function effect(fn, options: any = {}) {
   const _effect = new ReactiveEffect(fn, options.scheduler)
-  _effect.onStop = options.onStop
+
+  extend(_effect, options)
+  // Object.assign(_effect, options)
+  // _effect.onStop = options.onStop
+
   _effect.run()
   // 这里将当前 effect 的 run 方法返回出去，同时挂载了当前 effect 实例
   // 在stop方法中，需要调用「传入的runner的effect上的stop」函数，它的效果是
