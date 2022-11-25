@@ -1,8 +1,11 @@
 class ReactiveEffect {
-  private _fn: any
   deps = []
+  onStop?: () => void
+  active = true
+
+  private _fn: any
   public scheduler: Function | undefined
-  public onStop?: () => void
+
   constructor(fn, scheduler?) {
     this._fn = fn
     this.scheduler = scheduler
@@ -15,11 +18,18 @@ class ReactiveEffect {
   stop() {
     // 清除掉 dep 依赖集合中的当前 effect 实例
     // 达到trigger触发依赖的时候不执行当前的_fn的效果。
-    this.deps.forEach((dep: any) => {
+    if (this.active) {
+      cleanUpEffect(this)
       if (this.onStop) this.onStop()
-      dep.delete(this)
-    })
+      this.active = false
+    }
   }
+}
+
+function cleanUpEffect(effect) {
+  effect.deps.forEach((dep: any) => {
+    dep.delete(effect)
+  })
 }
 
 let activeEffect
