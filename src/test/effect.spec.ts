@@ -1,10 +1,10 @@
-import { effect } from '../effect'
+import { effect, stop } from '../effect'
 import { reactive } from '../reactivity'
 
 describe('effect', () => {
   it('happy path', () => {
     let user = reactive({
-      age: 10 
+      age: 10
     })
 
     // init 一开始 effect 会执行一次
@@ -31,4 +31,53 @@ describe('effect', () => {
     expect(foo).toBe(3)
     expect(res).toBe('runner called')
   })
+  it('scheduler', () => {
+    let dummy
+    let run: any
+    const scheduler = jest.fn(() => {
+      run = runner
+    })
+    const obj = reactive({ foo: 1 })
+    const runner = effect(
+      () => {
+        dummy = obj.foo
+      },
+      { scheduler }
+    )
+    // effect首次调用传入的fn依然有效
+    expect(scheduler).not.toHaveBeenCalled()
+    expect(dummy).toBe(1)
+
+    // 传入 scheduler 之后当依赖更新, 不会出发 effect.run 的调用。
+    obj.foo++
+    expect(scheduler).toHaveBeenCalledTimes(1)
+    // // should not run yet
+    expect(dummy).toBe(1)
+    // // manually run
+    run()
+    // // should have run
+    expect(dummy).toBe(2)
+  })
+  it('stop', () => {
+    let foo = reactive({ age: 1 })
+    let dummy
+    let runner = effect(() => {
+      dummy = foo.age
+    })
+
+    foo.age = 2
+    expect(dummy).toBe(2)
+
+    stop(runner)
+    foo.age = 3
+    // 这里目前不能用 foo.age++
+    // foo.age++ 相当于 foo.age = foo.age+1
+    // 会再调用一次getter,然而之前的activeEffect还没有清除，相当于又重新把依赖捡了回来
+    // foo.age = foo.age+1
+    expect(dummy).toBe(2)
+
+    runner()
+    expect(dummy).toBe(3)
+  })
+  it('onStop', () => {})
 })
