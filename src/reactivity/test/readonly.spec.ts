@@ -1,11 +1,14 @@
-import { readonly } from "../reactivity"
+import { isReadonly, readonly } from "../reactivity"
 
 describe('readonly', () => {
   it('happy path', () => {
     let original = { age: 1 }
-    let observed = readonly(original)
-    expect(observed).not.toBe(original)
-    expect(observed.age).toBe(1)
+    let wrapper = readonly(original)
+    expect(wrapper).not.toBe(original)
+    expect(wrapper.age).toBe(1)
+
+    expect(isReadonly(wrapper)).toBe(true)
+    expect(isReadonly(original)).toBe(false)
   })
   it('warn when call setter', () => {
     console.warn = jest.fn()
