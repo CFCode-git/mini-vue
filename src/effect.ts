@@ -48,6 +48,7 @@ export function effect(fn, options: any = {}) {
   // 清除掉 dep 依赖Set集合中的当前 effect 实例
   // 使得后续的 trigger 不再触发该 effect 的 run 方法.
   let runner: any = _effect.run.bind(_effect)
+  // 后面要在这个effect上拿stop方法执行
   runner.effect = _effect
   return runner
 }
@@ -71,9 +72,11 @@ export function track(target, key) {
   // 而单纯的 getter 也会触发 track 函数，因此这里需要判断一下
   if (!activeEffect) return
   dep.add(activeEffect)
+
   // 这里不需要担心，因为每一个 effect 的调用对应一个 activeEffect 实例，不会造成重复收集，
   // 这里所有的 effectEffect 都存储了同一个 dep 的引用。
-  // 这里的反向收集是为了后续在 stop 中访问 dep 并移除对应的 effect
+  // 为了stop api, 反向收集deps
+  // 为了后续在 stop 中访问 dep 并移除对应的 effect
   activeEffect.deps.push(dep)
 }
 

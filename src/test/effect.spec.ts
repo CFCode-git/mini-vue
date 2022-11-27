@@ -44,18 +44,19 @@ describe('effect', () => {
       },
       { scheduler }
     )
-    // effect首次调用传入的fn依然有效
-    expect(scheduler).not.toHaveBeenCalled()
+    // effect首次调用传入的fn
     expect(dummy).toBe(1)
+    expect(scheduler).not.toHaveBeenCalled()
 
     // 传入 scheduler 之后当依赖更新, 不会出发 effect.run 的调用。
     obj.foo++
     expect(scheduler).toHaveBeenCalledTimes(1)
-    // // should not run yet
+    // should not run yet
     expect(dummy).toBe(1)
-    // // manually run
+
+    // manually run
     run()
-    // // should have run
+    // should have run
     expect(dummy).toBe(2)
   })
   it('stop', () => {
