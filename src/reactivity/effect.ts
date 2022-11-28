@@ -68,6 +68,16 @@ export function effect(fn, options: any = {}) {
 
 const targetMap = new Map()
 export function track(target, key) {
+  // activeEffect 只有在调用了 effect() 以后才有值，
+  // 而单纯的 getter 也会触发 track 函数，因此这里需要判断一下
+  if (!activeEffect) return
+  // 「情况一」如果 effect 被 stop，那么 shouldTrack 无法被置为 true，也就无法收集依赖
+  // 「情况二」第二次触发 getter > trigger 的时候，有可能上一次收集依赖的 activeEffect 还没有被清除，
+  //         此时也不应该收集依赖
+  // shouldTrack 全局变量保证了 effect.run() 是收集依赖的安全性，
+  // 只有执行 run 方法，将 shouldTrack 置为 true 才能收集依赖
+  if(!shouldTrack)return 
+
   // 依赖收集 target => key => dep
   let depsMap = targetMap.get(target)
   if (!depsMap) {
@@ -81,15 +91,6 @@ export function track(target, key) {
     depsMap.set(key, dep)
   }
 
-  // activeEffect 只有在调用了 effect() 以后才有值，
-  // 而单纯的 getter 也会触发 track 函数，因此这里需要判断一下
-  if (!activeEffect) return
-  // 「情况一」如果 effect 被 stop，那么 shouldTrack 无法被置为 true，也就无法收集依赖
-  // 「情况二」第二次触发 getter > trigger 的时候，有可能上一次收集依赖的 activeEffect 还没有被清除，
-  //         此时也不应该收集依赖
-  // shouldTrack 全局变量保证了 effect.run() 是收集依赖的安全性，
-  // 只有执行 run 方法，将 shouldTrack 置为 true 才能收集依赖
-  if(!shouldTrack)return 
   dep.add(activeEffect)
 
   // 为了 stop api, 反向收集 dep
