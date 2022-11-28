@@ -10,8 +10,7 @@ describe('reactivity', () => {
     expect(isReactive(observed)).toBe(true)
     expect(isReactive(original)).toBe(false)
   })
-
-  it('nested reactive', () => {
+  test('nested reactive', () => {
     // 嵌套 reactive
     let original = {
       nested: { foo: 18 },
