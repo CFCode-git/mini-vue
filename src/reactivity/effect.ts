@@ -16,8 +16,7 @@ class ReactiveEffect {
   }
 
   run() {
-
-    if (!this.active) { 
+    if (!this.active) {
       // 当 this.active = false，说明当前 Effect 已经被标记为 stop，不应该被收集依赖
       return this._fn()
     }
@@ -49,7 +48,7 @@ function cleanUpEffect(effect) {
   })
   // effect.deps 的作用只是为了通过引用的方式从dep中删除当前effect
   // 当删除完毕后 deps 就没有用了，可以清空
-  effect.deps.length = 0 
+  effect.deps.length = 0
 }
 
 export function effect(fn, options: any = {}) {
@@ -68,15 +67,7 @@ export function effect(fn, options: any = {}) {
 
 const targetMap = new Map()
 export function track(target, key) {
-  // activeEffect 只有在调用了 effect() 以后才有值，
-  // 而单纯的 getter 也会触发 track 函数，因此这里需要判断一下
-  if (!activeEffect) return
-  // 「情况一」如果 effect 被 stop，那么 shouldTrack 无法被置为 true，也就无法收集依赖
-  // 「情况二」第二次触发 getter > trigger 的时候，有可能上一次收集依赖的 activeEffect 还没有被清除，
-  //         此时也不应该收集依赖
-  // shouldTrack 全局变量保证了 effect.run() 是收集依赖的安全性，
-  // 只有执行 run 方法，将 shouldTrack 置为 true 才能收集依赖
-  if(!shouldTrack)return 
+  if (!isTracking()) return
 
   // 依赖收集 target => key => dep
   let depsMap = targetMap.get(target)
@@ -91,12 +82,26 @@ export function track(target, key) {
     depsMap.set(key, dep)
   }
 
+  // 如果这个activeEffect已经被收集过了，那么下面两个就不需要执行了，特别是对于 activeEffect.deps 不需要重复收集
+  if (dep.has(activeEffect)) return
   dep.add(activeEffect)
-
-  // 为了 stop api, 反向收集 dep
-  // 为了后续在 stop 中访问 dep 并移除对应的 effect
-  // 即便重复收集也问题不大，deps里面的 dep 属于同一个引用
   activeEffect.deps.push(dep)
+}
+
+function isTracking() {
+  // activeEffect 只有在调用了 effect() 以后才有值，
+  // 而单纯的 getter 也会触发 track 函数，因此这里需要判断一下
+  // if (!activeEffect) return
+
+  // 「情况一」如果 effect 被 stop，那么 shouldTrack 无法被置为 true，也就无法收集依赖
+  // 「情况二」第二次触发 getter > trigger 的时候，有可能上一次收集依赖的 activeEffect 还没有被清除，
+  //         此时也不应该收集依赖
+  // shouldTrack 全局变量保证了 effect.run() 是收集依赖的安全性，
+  // 只有执行 run 方法，将 shouldTrack 置为 true 才能收集依赖
+  // if(!shouldTrack)return
+
+  // 如果下面的条件成立，那么可以认为当前执行到这里的effect是正在收集的状态(可以被收集)
+  return shouldTrack && activeEffect !== undefined
 }
 
 export function trigger(target, key) {
