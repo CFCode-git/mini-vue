@@ -1,4 +1,4 @@
-import { isReactive, reactive } from "../reactivity"
+import { isReactive, reactive } from '../reactivity'
 
 describe('reactivity', () => {
   it('happy path', () => {
@@ -9,5 +9,18 @@ describe('reactivity', () => {
 
     expect(isReactive(observed)).toBe(true)
     expect(isReactive(original)).toBe(false)
+  })
+
+  it('nested reactive', () => {
+    // 嵌套 reactive
+    let original = {
+      nested: { foo: 18 },
+      array: [{ bar: 2 }]
+    }
+    const observed = reactive(original);
+
+    expect(isReactive(observed.nested)).toBe(true)
+    expect(isReactive(observed.array)).toBe(true)
+    expect(isReactive(observed.array[0])).toBe(true)
   })
 })

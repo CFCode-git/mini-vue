@@ -1,5 +1,6 @@
+import { isObject } from '../shared'
 import { track, trigger } from './effect'
-import { ReactiveFlags } from './reactivity'
+import { reactive, ReactiveFlags, readonly } from './reactivity'
 
 // 这里是为了复用 getter 函数，而不需要每次创建 proxy 的时候都创建一个新的 getter
 const get = createGetter()
@@ -17,6 +18,10 @@ function createGetter(isReadonly = false) {
     }
 
     let res = Reflect.get(target, key)
+
+    if(isObject(res)){
+      return isReadonly ? readonly(res) : reactive(res)
+    }
 
     // 依赖收集
     if (!isReadonly) track(target, key)
