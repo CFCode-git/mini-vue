@@ -1,5 +1,7 @@
-import { extend } from "../shared"
+import { extend } from '../shared'
 
+let activeEffect
+let shouldTrack
 class ReactiveEffect {
   deps = []
   onStop?: () => void
@@ -14,12 +16,25 @@ class ReactiveEffect {
   }
 
   run() {
+
+    if (!this.active) { 
+      // 当 this.active = false，说明当前 Effect 已经被标记为 stop，不应该被收集依赖
+      return this._fn()
+    }
+
+    // this.active = true，收集依赖
+    shouldTrack = true
     activeEffect = this
-    return this._fn()
+    const result = this._fn() // 执行fn > 触发 getter > 触发 track > 收集依赖
+
+    // reset，依赖收集完毕后重置状态
+    shouldTrack = false
+
+    return result
   }
   stop() {
     // 清除掉 dep 依赖集合中的当前 effect 实例
-    // 达到trigger触发依赖的时候不执行当前的_fn的效果。
+    // 达到 trigger 触发依赖的时候不执行当前的 _fn 的效果。
     if (this.active) {
       cleanUpEffect(this)
       if (this.onStop) this.onStop()
@@ -32,9 +47,11 @@ function cleanUpEffect(effect) {
   effect.deps.forEach((dep: any) => {
     dep.delete(effect)
   })
+  // effect.deps 的作用只是为了通过引用的方式从dep中删除当前effect
+  // 当删除完毕后 deps 就没有用了，可以清空
+  effect.deps.length = 0 
 }
 
-let activeEffect
 export function effect(fn, options: any = {}) {
   const _effect = new ReactiveEffect(fn, options.scheduler)
 
@@ -43,12 +60,8 @@ export function effect(fn, options: any = {}) {
   // _effect.onStop = options.onStop
 
   _effect.run()
-  // 这里将当前 effect 的 run 方法返回出去，同时挂载了当前 effect 实例
-  // 在stop方法中，需要调用「传入的runner的effect上的stop」函数，它的效果是
-  // 清除掉 dep 依赖Set集合中的当前 effect 实例
-  // 使得后续的 trigger 不再触发该 effect 的 run 方法.
+  // 这里将当前 effect 的 run 方法返回出去，同时挂载了当前 effect 实例，在后续执行 stop 方法的时候用到.
   let runner: any = _effect.run.bind(_effect)
-  // 后面要在这个effect上拿stop方法执行
   runner.effect = _effect
   return runner
 }
@@ -71,12 +84,17 @@ export function track(target, key) {
   // activeEffect 只有在调用了 effect() 以后才有值，
   // 而单纯的 getter 也会触发 track 函数，因此这里需要判断一下
   if (!activeEffect) return
+  // 「情况一」如果 effect 被 stop，那么 shouldTrack 无法被置为 true，也就无法收集依赖
+  // 「情况二」第二次触发 getter > trigger 的时候，有可能上一次收集依赖的 activeEffect 还没有被清除，
+  //         此时也不应该收集依赖
+  // shouldTrack 全局变量保证了 effect.run() 是收集依赖的安全性，
+  // 只有执行 run 方法，将 shouldTrack 置为 true 才能收集依赖
+  if(!shouldTrack)return 
   dep.add(activeEffect)
 
-  // 这里不需要担心，因为每一个 effect 的调用对应一个 activeEffect 实例，不会造成重复收集，
-  // 这里所有的 effectEffect 都存储了同一个 dep 的引用。
-  // 为了stop api, 反向收集deps
+  // 为了 stop api, 反向收集 dep
   // 为了后续在 stop 中访问 dep 并移除对应的 effect
+  // 即便重复收集也问题不大，deps里面的 dep 属于同一个引用
   activeEffect.deps.push(dep)
 }
 

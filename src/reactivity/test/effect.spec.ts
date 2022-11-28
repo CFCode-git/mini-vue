@@ -62,6 +62,10 @@ describe('effect', () => {
   it('stop', () => {
     let foo = reactive({ age: 1 })
     let dummy
+
+    // 注意:
+    // 每一次触发 foo.age setter > 触发 trigger 
+    // > 执行 fn，设置activeEffect > 触发 foo.age getter > 重新收集依赖
     let runner = effect(() => {
       dummy = foo.age
     })
@@ -70,13 +74,13 @@ describe('effect', () => {
     expect(dummy).toBe(2)
 
     stop(runner)
-    foo.age = 3
-    // 这里目前不能用 foo.age++
+    // foo.age = 3
+    foo.age++
     // foo.age++ 相当于 foo.age = foo.age+1
-    // 会再调用一次getter,然而之前的activeEffect还没有清除，相当于又重新把依赖捡了回来
-    // foo.age = foo.age+1
+    // 会再调用一次getter
     expect(dummy).toBe(2)
 
+    // stopped effect should still be manually callable
     runner()
     expect(dummy).toBe(3)
   })
