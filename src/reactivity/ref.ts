@@ -1,14 +1,23 @@
-class RefImpl{
+import { trackEffect, triggerEffect, isTracking } from './effect'
+class RefImpl {
   private _value: any
-  constructor(value){
+  private deps
+  constructor(value) {
     this._value = value
+    this.deps = new Set()
   }
-  get value(){
+  get value() {
+    if (isTracking()) {
+      trackEffect(this.deps)
+    }
     return this._value
+  }
+  set value(newValue) {
+    this._value = newValue
+    triggerEffect(this.deps)
   }
 }
 
-
-export function ref(value){
+export function ref(value) {
   return new RefImpl(value)
 }

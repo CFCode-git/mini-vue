@@ -82,13 +82,16 @@ export function track(target, key) {
     depsMap.set(key, dep)
   }
 
+  trackEffect(dep)
+}
+export function trackEffect(dep) {
   // 如果这个activeEffect已经被收集过了，那么下面两个就不需要执行了，特别是对于 activeEffect.deps 不需要重复收集
   if (dep.has(activeEffect)) return
   dep.add(activeEffect)
   activeEffect.deps.push(dep)
 }
 
-function isTracking() {
+export function isTracking() {
   // activeEffect 只有在调用了 effect() 以后才有值，
   // 而单纯的 getter 也会触发 track 函数，因此这里需要判断一下
   // if (!activeEffect) return
@@ -109,6 +112,9 @@ export function trigger(target, key) {
   let depsMap = targetMap.get(target)
   let dep = depsMap.get(key)
 
+  triggerEffect(dep)
+}
+export function triggerEffect(dep) {
   for (const effect of dep) {
     if (effect.scheduler) {
       effect.scheduler()
