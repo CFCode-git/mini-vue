@@ -13,8 +13,10 @@ class RefImpl {
     return this._value
   }
   set value(newValue) {
-    this._value = newValue
-    triggerEffect(this.deps)
+    if (!Object.is(newValue, this._value)) {
+      this._value = newValue
+      triggerEffect(this.deps)
+    }
   }
 }
 
