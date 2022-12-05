@@ -6,6 +6,7 @@ class RefImpl {
   private _value: any
   private deps
   private _rawValue
+  public __v_isRef = true
 
   constructor(value) {
     this._rawValue = value
@@ -33,4 +34,29 @@ class RefImpl {
 
 export function ref(value) {
   return new RefImpl(value)
+}
+
+export function isRef(ref) {
+  return !!ref.__v_isRef
+}
+
+export function unRef(ref) {
+  return isRef(ref) ? ref.value : ref
+}
+
+export function proxyRefs(objWithRef) {
+  return new Proxy(objWithRef, {
+    get(target, key) {
+      return unRef(Reflect.get(target, key))
+    },
+    set(target, key, value) {
+      if (isRef(target[key]) && !isRef(value)) {
+        // target[key].value 修改原对象的值，触发 ReefImpl setter
+        return (target[key].value = value)
+      } else {
+        // 直接替换
+        return Reflect.set(target, key, value)
+      }
+    }
+  })
 }
