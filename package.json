@@ -2,17 +2,21 @@
   "name": "my-mini-vue",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "license": "MIT",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "rollup -c rollup.config.js"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "@babel/preset-env": "^7.15.4",
     "@babel/preset-typescript": "^7.15.0",
+    "@rollup/plugin-typescript": "^10.0.1",
     "@types/jest": "^27.0.1",
     "babel-jest": "^27.1.0",
     "jest": "^27.1.0",
+    "rollup": "^3.7.5",
     "typescript": "^4.4.2"
   }
 }
