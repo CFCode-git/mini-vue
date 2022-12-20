@@ -1,8 +1,8 @@
 {
   "name": "my-mini-vue",
   "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
+  "main": "lib/mini-vue.cjs.js",
+  "module": "lib/mini-vue.esm.js",
   "license": "MIT",
   "scripts": {
     "test": "jest",
@@ -16,7 +16,8 @@
     "@types/jest": "^27.0.1",
     "babel-jest": "^27.1.0",
     "jest": "^27.1.0",
-    "rollup": "^3.7.5",
+    "rollup": "^2.57.0",
+    "tslib": "^2.4.1",
     "typescript": "^4.4.2"
   }
 }
