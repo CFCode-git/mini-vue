@@ -1,15 +1,51 @@
 import { createComponentInstance, setupComponent } from './component'
+import { isObject } from '../shared/index'
 export function render(vnode, container) {
   // patch
   patch(vnode, container)
 }
 
 function patch(vnode, container) {
-  // 判断类型
+  // 判断 vnode 类型
   // 判断是不是 element
 
-  // 处理组件
-  processComponent(vnode, container)
+  if (typeof vnode.type === 'string') {
+    // 处理 element
+    processElement(vnode, container)
+  } else if (isObject(vnode.type)) {
+    // 处理组件
+    processComponent(vnode, container)
+  }
+}
+
+function processElement(vnode: any, container: any) {
+  mountElement(vnode, container)
+}
+
+function mountElement(vnode: any, container: any) {
+  const el = document.createElement(vnode.type)
+
+  // children
+  const { children } = vnode
+  if (typeof children === 'string') {
+    el.textContent = children
+  } else if (Array.isArray(children)) {
+    mountChildren(children, el)
+  }
+
+  // props
+  const { props } = vnode
+  for (const key in props) {
+    el.setAttribute(key, props[key])
+  }
+
+  container.append(el)
+}
+
+function mountChildren(children: any[], el: any) {
+  for (const child of children) {
+    patch(child, el)
+  }
 }
 
 function processComponent(vnode: any, container: any) {
