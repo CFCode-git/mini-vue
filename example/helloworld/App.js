@@ -9,23 +9,23 @@ export const App = {
         id: 'root',
         class: ['hello', 'world']
       },
-      //  'hi, ' + this.msg
-      [
-        h(
-          'p',
-          {
-            class: 'red'
-          },
-          'hello'
-        ),
-        h(
-          'p',
-          {
-            class: 'blue'
-          },
-          'world'
-        )
-      ]
+      'hi, ' + this.msg
+      // [
+      //   h(
+      //     'p',
+      //     {
+      //       class: 'red'
+      //     },
+      //     'hello'
+      //   ),
+      //   h(
+      //     'p',
+      //     {
+      //       class: 'blue'
+      //     },
+      //     'world'
+      //   )
+      // ]
     )
   },
   setup() {

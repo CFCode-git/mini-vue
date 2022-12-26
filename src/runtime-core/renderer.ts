@@ -61,9 +61,13 @@ function mountComponent(vnode: any, container) {
 }
 
 function setupRenderEffect(instance: any, container) {
-  const subTree = instance.render() // 得到App.js中h函数生成的虚拟节点
+
+  const { proxy } = instance
+  // 将 proxy 对象作为 render 函数的 this >>> render 函数内访问 this.msg / this.$el / ....
+  const subTree = instance.render.call(proxy) // 得到App.js中h函数生成的虚拟节点
+
+
   // vnode > patch
   // vnode > element > mountElement
-
   patch(subTree, container)
 }
