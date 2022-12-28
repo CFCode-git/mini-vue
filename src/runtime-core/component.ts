@@ -30,7 +30,12 @@ function setupStatefulComponent(instance) {
           return setupState[key]
         }
 
-        // $options ...
+        // 处理 $el
+        if(key === '$el'){
+          return instance.vnode.el
+        }
+
+        // 处理 $options ...
 
       }
     }
