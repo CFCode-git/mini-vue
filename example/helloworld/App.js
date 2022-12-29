@@ -33,7 +33,7 @@ export const App = {
   },
   setup() {
     return {
-      msg: 'mini-vue'
+      msg: 'mini-vue, good'
     }
   }
 }

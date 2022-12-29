@@ -82,9 +82,7 @@ function setupRenderEffect(instance: any,vnode, container) {
   //// patch 执行完毕后，subTree上面挂载 el，存储真正的DOM节点引用。
   // 外部 vue 单文件组件控制的实际上是根组件。
   // 所以接下来要将 subTree.el 赋值给与之对应的根组件。
-  // instance.vnode.el = subTree.el 
-  vnode.el = subTree.el
-
+  vnode.el = subTree.el // instance.vnode.el = subTree.el 
 
 
 }
