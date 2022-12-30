@@ -10,7 +10,13 @@ export const App = {
       'div',
       {
         id: 'root',
-        class: ['hello', 'world']
+        class: ['hello', 'world'],
+        onClick(){
+          console.log('click');
+        },
+        onMouseDown(){
+          console.log('mousedown');
+        }
       },
       'hi, ' + this.msg
       // [

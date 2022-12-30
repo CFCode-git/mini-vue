@@ -25,7 +25,6 @@ function patch(vnode, container) {
     // 处理组件
     processComponent(vnode, container)
   }
-
 }
 
 function processElement(vnode: any, container: any) {
@@ -37,11 +36,14 @@ function mountElement(vnode: any, container: any) {
 
   // children
   const { children, shapeFlag } = vnode
-  // if (typeof children === 'string') {
-  //   el.textContent = children
-  // } else if (Array.isArray(children)) {
-  //   mountChildren(children, el)
-  // }
+
+  /*
+    if (typeof children === 'string') {
+      el.textContent = children
+    } else if (Array.isArray(children)) {
+      mountChildren(children, el)
+    }
+  */
 
   if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
     // 通过 与运算 查找判断 xxxx & 0100 得到  0100【十进值 4】或者 0000【十进值 0】
@@ -53,7 +55,14 @@ function mountElement(vnode: any, container: any) {
   // props
   const { props } = vnode
   for (const key in props) {
-    el.setAttribute(key, props[key])
+    let val = props[key]
+    const isOn = key => /^on[A-Z]/.test(key)
+
+    if (isOn(key)) {
+      el.addEventListener(key.slice(2).toLowerCase(), val)
+    } else {
+      el.setAttribute(key, val)
+    }
   }
 
   container.append(el)
