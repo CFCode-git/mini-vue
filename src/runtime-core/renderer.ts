@@ -1,5 +1,6 @@
 import { createComponentInstance, setupComponent } from './component'
 import { isObject } from '../shared/index'
+import { ShapeFlags } from '../shared/ShapeFlags'
 export function render(vnode, container) {
   // patch
   patch(vnode, container)
@@ -9,13 +10,22 @@ function patch(vnode, container) {
   // 判断 vnode 类型
   // 判断是不是 element
 
-  if (typeof vnode.type === 'string') {
+  // if (typeof vnode.type === 'string') {
+  //   // 处理 element
+  //   processElement(vnode, container)
+  // } else if (isObject(vnode.type)) {
+  //   // 处理组件
+  //   processComponent(vnode, container)
+  // }
+  const { shapeFlag } = vnode
+  if (shapeFlag & ShapeFlags.ELEMENT) {
     // 处理 element
     processElement(vnode, container)
-  } else if (isObject(vnode.type)) {
+  } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
     // 处理组件
     processComponent(vnode, container)
   }
+
 }
 
 function processElement(vnode: any, container: any) {
@@ -26,10 +36,17 @@ function mountElement(vnode: any, container: any) {
   const el = (vnode.el = document.createElement(vnode.type))
 
   // children
-  const { children } = vnode
-  if (typeof children === 'string') {
+  const { children, shapeFlag } = vnode
+  // if (typeof children === 'string') {
+  //   el.textContent = children
+  // } else if (Array.isArray(children)) {
+  //   mountChildren(children, el)
+  // }
+
+  if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
+    // 通过 与运算 查找判断 xxxx & 0100 得到  0100【十进值 4】或者 0000【十进值 0】
     el.textContent = children
-  } else if (Array.isArray(children)) {
+  } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
     mountChildren(children, el)
   }
 
@@ -57,11 +74,10 @@ function mountComponent(vnode: any, container) {
   // 以便挂载 props slots 等组件相关的属性
   const instance = createComponentInstance(vnode)
   setupComponent(instance)
-  setupRenderEffect(instance,vnode, container)
+  setupRenderEffect(instance, vnode, container)
 }
 
-function setupRenderEffect(instance: any,vnode, container) {
-
+function setupRenderEffect(instance: any, vnode, container) {
   const { proxy } = instance
   // 将 proxy 对象作为 render 函数的 this >>> render 函数内访问 this.msg / this.$el / ....
   const subTree = instance.render.call(proxy) // 得到App.js中h函数生成的虚拟节点
@@ -82,7 +98,5 @@ function setupRenderEffect(instance: any,vnode, container) {
   //// patch 执行完毕后，subTree上面挂载 el，存储真正的DOM节点引用。
   // 外部 vue 单文件组件控制的实际上是根组件。
   // 所以接下来要将 subTree.el 赋值给与之对应的根组件。
-  vnode.el = subTree.el // instance.vnode.el = subTree.el 
-
-
+  vnode.el = subTree.el // instance.vnode.el = subTree.el
 }
