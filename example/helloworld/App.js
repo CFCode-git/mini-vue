@@ -1,4 +1,5 @@
 import { h } from '../../lib/mini-vue.esm.js'
+import { Foo } from './Foo.js'
 
 window.self = null
 export const App = {
@@ -11,14 +12,15 @@ export const App = {
       {
         id: 'root',
         class: ['hello', 'world'],
-        onClick(){
-          console.log('click');
+        onClick() {
+          console.log('click')
         },
-        onMouseDown(){
-          console.log('mousedown');
+        onMouseDown() {
+          console.log('mousedown')
         }
       },
-      'hi, ' + this.msg
+      // 'hi, ' + this.msg
+      [h('div', {}, this.msg), h(Foo, { count: 1 })]
       // [
       //   h(
       //     'p',
