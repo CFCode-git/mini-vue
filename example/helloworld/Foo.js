@@ -11,11 +11,11 @@ export const Foo = {
     // console.log(props)
   },
   render() {
-    // 功能点2. 在 render 中通过 this 访问 props
+    // 功能点2. 在 render 中通过 this 访问 props 中的属性
     return h(
       'div',
       {},
-      'Foo:' + this.props
+      'Foo:' + this.count
     )
   }
 }
