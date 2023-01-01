@@ -3,6 +3,7 @@ import { Foo } from './Foo.js'
 
 window.self = null
 export const App = {
+  name:'App',
   // .vue 单文件组件
   // <template></template> >> render 函数
   render() {

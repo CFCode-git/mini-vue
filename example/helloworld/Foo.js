@@ -7,8 +7,8 @@ export const Foo = {
     console.log(props)
 
     // 功能点3. props 是 shallowReadonly
-    // props.count++
-    // console.log(props)
+    props.count++
+    console.log(props)
   },
   render() {
     // 功能点2. 在 render 中通过 this 访问 props 中的属性
