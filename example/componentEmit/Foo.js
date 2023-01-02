@@ -9,7 +9,7 @@ export const Foo = {
     }
     const emitAddFoo = () => {
       console.log('Foo组件,emitAddFoo函数')
-      // emit('add-foo')
+      emit('add-foo','我是Foo组件的emitAddFoo')
     }
     return {
       emitAdd,

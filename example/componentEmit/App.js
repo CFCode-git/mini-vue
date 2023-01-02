@@ -11,7 +11,10 @@ export const App = {
       h(Foo, {
         count: 1,
         onAdd: (...args) => {
-          console.log('App组件中的Foo,onAdd执行,父组件App中监听到子组件Foo emit 的 add event,传来的参数是: ', ...args)
+          console.log('App组件中的Foo, onAdd执行,父组件App中监听到子组件Foo emit 的 add event,传来的参数是: ', ...args)
+        },
+        onAddFoo(...args){
+          console.log('App组件, onAddFoo执行, 传来的参数是: ', ...args)
         }
       })
     ])
