@@ -1,14 +1,19 @@
 import { initProps } from './componentProps'
 import { PublicInstanceProxyHandler } from './componentPublicInstance'
 import { shallowReadonly } from '../reactivity/reactivity'
+import { emit } from './componentEmit'
 
 export function createComponentInstance(vnode) {
   const component = {
     vnode,
     type: vnode.type,
     setupState: {},
-    props: {}
+    props: {},
+    emit: () => {}
   }
+  // 通过bind产生一个新函数，指定新函数的 this 为 null，第一个参数为 component，也即 instance 实例对象
+  // 在 emit 函数内部需要从 instance 实例对象中取出 props 中的 emit 函数
+  component.emit = emit.bind(null, component) as any;
   return component
 }
 
@@ -32,7 +37,9 @@ function setupStatefulComponent(instance) {
 
   if (setup) {
     // 将 props 作为参数传递给 setup 函数
-    const setupResult = setup(shallowReadonly(instance.props))
+    const setupResult = setup(shallowReadonly(instance.props), {
+      emit: instance.emit
+    })
     handleSetupResult(instance, setupResult)
   }
 }
