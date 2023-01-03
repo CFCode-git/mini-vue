@@ -1,4 +1,4 @@
 import { createVNode } from '../vnode'
-export function renderSlots(slots) {
-  return createVNode('div', {}, slots)
+export function renderSlots(slots, name) {
+  return createVNode('div', {}, slots[name])
 }

@@ -13,6 +13,7 @@ export const Foo = {
 
     // 通过 this.$slots 取出在 App 组件中定义的 children
     console.log(this.$slots)
-    return h('div', {}, [foo, renderSlots(this.$slots)])
+    // Foo.vnode.children
+    return h('div', {}, [renderSlots(this.$slots, 'header'), foo, renderSlots(this.$slots, 'footer')])
   }
 }

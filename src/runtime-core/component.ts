@@ -11,7 +11,7 @@ export function createComponentInstance(vnode) {
     setupState: {},
     props: {},
     emit: () => {},
-    slots: []
+    slots: {}
   }
   // 通过bind产生一个新函数，指定新函数的 this 为 null，第一个参数为 component，也即 instance 实例对象
   // 在 emit 函数内部需要从 instance 实例对象中取出 props 中的 emit 函数
@@ -22,7 +22,7 @@ export function createComponentInstance(vnode) {
 export function setupComponent(instance) {
   // 将 props 从虚拟节点中取出挂载到 instance
   initProps(instance, instance.vnode.props)
-  // TODO
+  // 初始化 slots
   initSlots(instance, instance.vnode.children)
 
   // 处理有状态的组件（非函数组件）

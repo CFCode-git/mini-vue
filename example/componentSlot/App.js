@@ -11,7 +11,13 @@ export const App = {
     // 单个节点
     // const foo = h(Foo, { count: 1 }, h('p', {}, 'slots'))
     // 节点数组
-    const foo = h(Foo, { count: 1 }, [h('p', {}, 'slots1'),h('p', {}, 'slots2')])
+    // const foo = h(Foo, { count: 1 }, [h('p', {}, 'slots1'),h('p', {}, 'slots2')])
+
+    // 具名插槽
+    const foo = h(Foo, { count: 1 }, {
+      header: h('p', {}, 'slots1'),
+      footer: h('p', {}, 'slots2')
+    })
 
     return h('div', { id: 'root' }, [app, foo])
   },
