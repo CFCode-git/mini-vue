@@ -7,24 +7,26 @@ export function render(vnode, container) {
 }
 
 function patch(vnode, container) {
-  // 判断 vnode 类型
-  // 判断是不是 element
+  const { shapeFlag, type } = vnode
 
-  // if (typeof vnode.type === 'string') {
-  //   // 处理 element
-  //   processElement(vnode, container)
-  // } else if (isObject(vnode.type)) {
-  //   // 处理组件
-  //   processComponent(vnode, container)
-  // }
-  const { shapeFlag } = vnode
-  if (shapeFlag & ShapeFlags.ELEMENT) {
-    // 处理 element
-    processElement(vnode, container)
-  } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-    // 处理组件
-    processComponent(vnode, container)
+  // 判断 vnode 类型
+  if (type === 'Fragment') {
+    // 如果 type 不是 div / p 等标签节点而是 Fragment，那么只需要 mount vnode.children
+    processFragment(vnode.children, container)
+  } else {
+    if (shapeFlag & ShapeFlags.ELEMENT) {
+      // 处理 element
+      processElement(vnode, container)
+    } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+      // 处理组件
+      processComponent(vnode, container)
+    }
   }
+}
+
+// slots 走 mountFragment 逻辑 只 mountChildren, 此时的 vnode 就是 slots 数组
+function processFragment(vnode: any, container: any) {
+  mountChildren(vnode, container)
 }
 
 function processElement(vnode: any, container: any) {
