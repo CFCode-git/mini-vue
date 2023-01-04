@@ -13,11 +13,11 @@ function patch(vnode, container) {
     // 处理 Fragment 比如 slots
     case Fragment:
       // 如果 type 不是 div / p 等标签节点而是 Fragment，那么只需要 mount vnode.children
-      processFragment(vnode.children, container)
+      processFragment(vnode, container)
       break
-    // 处理文本节点
+    // 处理文本节点, children: string
     case Text:
-      processText(vnode.children, container)
+      processText(vnode, container)
       break
     default:
       // 判断 vnode 类型
@@ -30,7 +30,6 @@ function patch(vnode, container) {
       }
       break
   }
-
 }
 
 // slots 走 mountFragment 逻辑 只 mountChildren, 此时的 vnode 就是 slots 数组
@@ -38,10 +37,12 @@ function processFragment(vnode: any, container: any) {
   mountChildren(vnode, container)
 }
 
-function processText(children: any, container: any) {
-  const textNode = document.createTextNode(children)
-  container.append(textNode)
+function processText(vnode, container) {
+  const { children } = vnode
 
+  const textNode = (vnode.el = document.createTextNode(children))
+
+  container.append(textNode)
 }
 
 function processElement(vnode: any, container: any) {
@@ -66,7 +67,7 @@ function mountElement(vnode: any, container: any) {
     // 通过 与运算 查找判断 xxxx & 0100 得到  0100【十进值 4】或者 0000【十进值 0】
     el.textContent = children
   } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
-    mountChildren(children, el)
+    mountChildren(vnode, el)
   }
 
   // props
@@ -86,10 +87,13 @@ function mountElement(vnode: any, container: any) {
   container.append(el)
 }
 
-function mountChildren(children: any[], el: any) {
-  for (const child of children) {
-    patch(child, el)
-  }
+function mountChildren(vnode, container) {
+  vnode.children.forEach(v => {
+    patch(v, container)
+  })
+  // for (const child of children) {
+  //   patch(child, container)
+  // }
 }
 
 function processComponent(vnode: any, container: any) {
@@ -127,4 +131,3 @@ function setupRenderEffect(instance: any, vnode, container) {
   // 所以接下来要将 subTree.el 赋值给与之对应的根组件。
   vnode.el = subTree.el // instance.vnode.el = subTree.el
 }
-

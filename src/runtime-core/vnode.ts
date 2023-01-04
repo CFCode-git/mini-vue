@@ -34,7 +34,7 @@ export function createVNode(type, props?, children?) {
   return vnode
 }
 
-export function createTextNode(text){
+export function createTextNode(text:string){
   return createVNode(Text,{},text)
 }
 
