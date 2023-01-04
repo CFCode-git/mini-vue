@@ -1,4 +1,4 @@
-import { h } from '../../lib/mini-vue.esm.js'
+import { h,createTextNode } from '../../lib/mini-vue.esm.js'
 import { Foo } from './Foo.js'
 
 window.self = null
@@ -20,10 +20,17 @@ export const App = {
     // })
 
     // 作用域插槽
-    const foo = h(Foo, { count: 1 }, {
-      header: ({arg}) => h('p', {}, 'slots1,作用域插槽: ' + arg),
-      footer: ({arg}) => h('p', {}, 'slots2,作用域插槽:' + arg)
-    })
+    const foo = h(
+      Foo,
+      { count: 1 },
+      {
+        header: ({ arg }) => [
+          h('p', {}, 'slots1,作用域插槽: ' + arg), 
+          createTextNode('hello, 我是textNode')
+        ],
+        footer: ({ arg }) => h('p', {}, 'slots2,作用域插槽:' + arg)
+      }
+    )
 
     return h('div', { id: 'root' }, [app, foo])
   },

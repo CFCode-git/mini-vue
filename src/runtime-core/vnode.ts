@@ -2,6 +2,7 @@ import { ShapeFlags } from "../shared/ShapeFlags"
 import { isObject } from '../shared/index';
 
 export const Fragment = Symbol('Fragment')
+export const Text = Symbol('Text')
 
 /**
  *
@@ -30,11 +31,11 @@ export function createVNode(type, props?, children?) {
       vnode.shapeFlag = vnode.shapeFlag | ShapeFlags.SLOT_CHILDREN
     }
   }
-
-
-
-
   return vnode
+}
+
+export function createTextNode(text){
+  return createVNode(Text,{},text)
 }
 
 // 初始化 vnode 的 shapeFlag

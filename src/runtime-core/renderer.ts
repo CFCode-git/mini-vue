@@ -1,6 +1,6 @@
 import { createComponentInstance, setupComponent } from './component'
 import { ShapeFlags } from '../shared/ShapeFlags'
-import { Fragment } from './vnode';
+import { Fragment, Text } from './vnode'
 export function render(vnode, container) {
   // patch
   patch(vnode, container)
@@ -9,24 +9,39 @@ export function render(vnode, container) {
 function patch(vnode, container) {
   const { shapeFlag, type } = vnode
 
-  // 判断 vnode 类型
-  if (type === Fragment) {
-    // 如果 type 不是 div / p 等标签节点而是 Fragment，那么只需要 mount vnode.children
-    processFragment(vnode.children, container)
-  } else {
-    if (shapeFlag & ShapeFlags.ELEMENT) {
-      // 处理 element
-      processElement(vnode, container)
-    } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
-      // 处理组件
-      processComponent(vnode, container)
-    }
+  switch (type) {
+    // 处理 Fragment 比如 slots
+    case Fragment:
+      // 如果 type 不是 div / p 等标签节点而是 Fragment，那么只需要 mount vnode.children
+      processFragment(vnode.children, container)
+      break
+    // 处理文本节点
+    case Text:
+      processText(vnode.children, container)
+      break
+    default:
+      // 判断 vnode 类型
+      if (shapeFlag & ShapeFlags.ELEMENT) {
+        // 处理 element
+        processElement(vnode, container)
+      } else if (shapeFlag & ShapeFlags.STATEFUL_COMPONENT) {
+        // 处理组件
+        processComponent(vnode, container)
+      }
+      break
   }
+
 }
 
 // slots 走 mountFragment 逻辑 只 mountChildren, 此时的 vnode 就是 slots 数组
 function processFragment(vnode: any, container: any) {
   mountChildren(vnode, container)
+}
+
+function processText(children: any, container: any) {
+  const textNode = document.createTextNode(children)
+  container.append(textNode)
+
 }
 
 function processElement(vnode: any, container: any) {
@@ -112,3 +127,4 @@ function setupRenderEffect(instance: any, vnode, container) {
   // 所以接下来要将 subTree.el 赋值给与之对应的根组件。
   vnode.el = subTree.el // instance.vnode.el = subTree.el
 }
+
