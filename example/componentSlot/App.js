@@ -21,8 +21,8 @@ export const App = {
 
     // 作用域插槽
     const foo = h(Foo, { count: 1 }, {
-      header: ({arg}) => h('p', {}, 'slots1' + arg),
-      footer: ({arg2:arg}) => h('p', {}, 'slots2' + arg)
+      header: ({arg}) => h('p', {}, 'slots1,作用域插槽: ' + arg),
+      footer: ({arg}) => h('p', {}, 'slots2,作用域插槽:' + arg)
     })
 
     return h('div', { id: 'root' }, [app, foo])
