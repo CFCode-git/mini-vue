@@ -37,6 +37,8 @@ function setupStatefulComponent(instance) {
 
   const { setup } = Component
 
+  // 在 setup 调用前将全局的 currentInstance 赋值为当前的 instance
+  currentInstance = instance
   if (setup) {
     // 将 props 作为参数传递给 setup 函数
     const setupResult = setup(shallowReadonly(instance.props), {
@@ -44,6 +46,10 @@ function setupStatefulComponent(instance) {
     })
     handleSetupResult(instance, setupResult)
   }
+  // 在 setup 调用完毕后，将全局的 currentInstance 置为 null
+  currentInstance = null
+
+
 }
 
 function handleSetupResult(instance, setupResult: any) {
@@ -61,4 +67,10 @@ function finishComponentSetup(instance: any) {
   if (Component.render) {
     instance.render = Component.render
   }
+}
+
+// getCurrentInstance 只能在 setup 函数中调用
+let currentInstance = null
+export function getCurrentInstance(){
+ return currentInstance
 }
