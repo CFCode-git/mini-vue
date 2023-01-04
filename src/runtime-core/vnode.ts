@@ -1,6 +1,8 @@
 import { ShapeFlags } from "../shared/ShapeFlags"
 import { isObject } from '../shared/index';
 
+export const Fragment = Symbol('Fragment')
+
 /**
  *
  * @param type 组件对象

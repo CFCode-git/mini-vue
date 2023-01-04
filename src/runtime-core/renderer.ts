@@ -1,6 +1,6 @@
 import { createComponentInstance, setupComponent } from './component'
-import { isObject } from '../shared/index'
 import { ShapeFlags } from '../shared/ShapeFlags'
+import { Fragment } from './vnode';
 export function render(vnode, container) {
   // patch
   patch(vnode, container)
@@ -10,7 +10,7 @@ function patch(vnode, container) {
   const { shapeFlag, type } = vnode
 
   // 判断 vnode 类型
-  if (type === 'Fragment') {
+  if (type === Fragment) {
     // 如果 type 不是 div / p 等标签节点而是 Fragment，那么只需要 mount vnode.children
     processFragment(vnode.children, container)
   } else {
