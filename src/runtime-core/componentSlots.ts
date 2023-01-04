@@ -5,7 +5,13 @@ export function initSlots(instance, children) {
   let slots = {}
   for (const key in children) {
     const slot = children[key]
-    slots[key] = Array.isArray(slot) ? slot : [slot]
+    // 这里 slots[key] 返回的函数 最终会被 renderSlots
+    slots[key] = (arg) => normalizeSlot(slot(arg))
   }
   instance.slots = slots
+}
+
+
+function normalizeSlot(slot){
+  return Array.isArray(slot) ? slot : [slot]
 }

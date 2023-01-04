@@ -14,9 +14,15 @@ export const App = {
     // const foo = h(Foo, { count: 1 }, [h('p', {}, 'slots1'),h('p', {}, 'slots2')])
 
     // 具名插槽
+    // const foo = h(Foo, { count: 1 }, {
+    //   header: h('p', {}, 'slots1'),
+    //   footer: h('p', {}, 'slots2')
+    // })
+
+    // 作用域插槽
     const foo = h(Foo, { count: 1 }, {
-      header: h('p', {}, 'slots1'),
-      footer: h('p', {}, 'slots2')
+      header: ({arg}) => h('p', {}, 'slots1' + arg),
+      footer: ({arg2:arg}) => h('p', {}, 'slots2' + arg)
     })
 
     return h('div', { id: 'root' }, [app, foo])
