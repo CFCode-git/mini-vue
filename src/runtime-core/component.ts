@@ -4,14 +4,16 @@ import { shallowReadonly } from '../reactivity/reactivity'
 import { emit } from './componentEmit'
 import { initSlots } from './componentSlots'
 
-export function createComponentInstance(vnode) {
+export function createComponentInstance(vnode,parent) {
   const component = {
     vnode,
     type: vnode.type,
     setupState: {},
     props: {},
     emit: () => {},
-    slots: {}
+    slots: {},
+    provides: {},
+    parent
   }
   // 通过bind产生一个新函数，指定新函数的 this 为 null，第一个参数为 component，也即 instance 实例对象
   // 在 emit 函数内部需要从 instance 实例对象中取出 props 中的 emit 函数
