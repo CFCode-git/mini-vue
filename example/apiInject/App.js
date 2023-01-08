@@ -24,11 +24,14 @@ const Provider = {
 }
 
 const ProviderTwo = {
-  name: 'Provider',
+  name: 'ProviderTwo',
   setup() {
+    provide('foo', "ProviderTwo's foo")
+    const foo = inject('foo')
+    return {foo}
   },
   render() {
-    return h('div', {}, [h('p', {}, `ProviderTwo`), h(Consumer)])
+    return h('div', {}, [h('p', {}, `ProviderTwo - ${this.foo}`), h(Consumer)])
   }
 }
 
