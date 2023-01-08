@@ -15,11 +15,20 @@ export const App = {
 const Provider = {
   name: 'Provider',
   setup() {
-    provide('foo', "provider's foo")
-    provide('bar', "provider's bar")
+    provide('foo', "Provider's foo")
+    provide('bar', "Provider's bar")
   },
   render() {
-    return h('div', {}, [h('p', {}, 'Provider'), h(Consumer)])
+    return h('div', {}, [h('p', {}, 'Provider'), h(ProviderTwo)])
+  }
+}
+
+const ProviderTwo = {
+  name: 'Provider',
+  setup() {
+  },
+  render() {
+    return h('div', {}, [h('p', {}, `ProviderTwo`), h(Consumer)])
   }
 }
 
