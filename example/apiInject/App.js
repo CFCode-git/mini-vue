@@ -40,12 +40,17 @@ const Consumer = {
   setup() {
     const foo = inject('foo')
     const bar = inject('bar')
+
+    // const baz = inject('baz','defaultValue')
+    const baz = inject('baz',()=>'defaultValue2')
+
     return {
       foo,
-      bar
+      bar,
+      baz
     }
   },
   render() {
-    return h('div', {}, `Consumer - ${this.foo} - ${this.bar}`)
+    return h('div', {}, `Consumer - ${this.foo} - ${this.bar} - ${this.baz}`)
   }
 }
